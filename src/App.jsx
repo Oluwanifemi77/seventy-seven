@@ -5,6 +5,7 @@ import IntroCurtain from './components/IntroCurtain.jsx'
 import AnnouncementBar from './components/AnnouncementBar.jsx'
 import Nav from './components/Nav.jsx'
 import MobileMenu from './components/MobileMenu.jsx'
+import CartDrawer from './components/CartDrawer.jsx'
 import Hero from './components/Hero.jsx'
 import DropCard from './components/DropCard.jsx'
 import Marquee from './components/Marquee.jsx'
@@ -52,50 +53,92 @@ function applyLogoFont(t) {
   root.setProperty('--cognac-hi', t.accentColor)
 }
 
-// Apply defaults before first render
 applyLogoFont(TWEAK_DEFAULTS)
 
 // ─── App ────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [cartCount, setCartCount] = useState(0)
+  // ── Cart state ─────────────────────────────────────────────────
+  // cartItems: [{ id, name, price, ph, category, qty }, ...]
+  const [cartItems, setCartItems] = useState([])
+  const [cartOpen, setCartOpen] = useState(false)
+
+  const cartCount = cartItems.reduce((sum, i) => sum + i.qty, 0)
+
+  const addToCart = (product) => {
+    setCartItems((prev) => {
+      const existing = prev.find((i) => i.id === product.id)
+      if (existing) {
+        return prev.map((i) =>
+          i.id === product.id ? { ...i, qty: i.qty + 1 } : i
+        )
+      }
+      return [...prev, { ...product, qty: 1 }]
+    })
+  }
+
+  const updateQty = (id, qty) => {
+    if (qty < 1) {
+      setCartItems((prev) => prev.filter((i) => i.id !== id))
+    } else {
+      setCartItems((prev) =>
+        prev.map((i) => (i.id === id ? { ...i, qty } : i))
+      )
+    }
+  }
+
+  const removeFromCart = (id) => {
+    setCartItems((prev) => prev.filter((i) => i.id !== id))
+  }
+
+  // ── Menu state ────────────────────────────────────────────────
   const [menuOpen, setMenuOpen] = useState(false)
+
+  // ── Tweaks ───────────────────────────────────────────────────
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS)
 
-  // Scroll-based reveals
+  // ── Hooks ────────────────────────────────────────────────────
   useScrollReveal()
   useParallax()
 
-  // Apply logo font whenever tweak values change
-  useEffect(() => {
-    applyLogoFont(t)
-  }, [t.logoFont, t.logoTrack, t.accentColor])
+  useEffect(() => { applyLogoFont(t) }, [t.logoFont, t.logoTrack, t.accentColor])
 
-  // Sync body class with menu state
+  // Sync body class with mobile menu state
   useEffect(() => {
     if (menuOpen) document.body.classList.add('menu-open')
     else document.body.classList.remove('menu-open')
   }, [menuOpen])
 
-  const handleAddToCart = () => {
-    setCartCount((c) => Math.min(c + 1, 99))
-  }
-
   return (
     <>
       <IntroCurtain />
+
+      {/* Fixed announcement bar — always at very top */}
       <AnnouncementBar />
+
+      {/* Fixed nav — sits below announce bar, moves to top on scroll */}
       <Nav
         cartCount={cartCount}
         menuOpen={menuOpen}
         onMenuToggle={setMenuOpen}
+        onCartOpen={() => setCartOpen(true)}
       />
+
       <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+
+      {/* Cart drawer */}
+      <CartDrawer
+        open={cartOpen}
+        onClose={() => setCartOpen(false)}
+        items={cartItems}
+        onQtyChange={updateQty}
+        onRemove={removeFromCart}
+      />
 
       <main id="top">
         <Hero />
         <DropCard />
         <Marquee />
-        <Products onAddToCart={handleAddToCart} />
+        <Products onAddToCart={addToCart} />
         <Lookbook />
         <Manifesto />
         <Categories />
@@ -104,7 +147,7 @@ export default function App() {
 
       <Footer />
 
-      {/* Tweaks panel — logo font & accent colour customisation */}
+      {/* Tweaks panel */}
       <TweaksPanel title="Tweaks — 77">
         <TweakSection label="77 Logotype" />
         <div className="twk-row">

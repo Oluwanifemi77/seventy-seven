@@ -20,7 +20,7 @@ function ProductCard({ product, onAddToCart }) {
     if (busy) return
     setBusy(true)
     setLabel('Added ✓')
-    onAddToCart()
+    onAddToCart(product)
     setTimeout(() => {
       setLabel('Add to Cart')
       setBusy(false)
