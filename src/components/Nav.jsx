@@ -1,18 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-
-function scrollTo(id) {
-  if (id === '#top') { window.scrollTo({ top: 0, behavior: 'smooth' }); return }
-  const el = document.querySelector(id)
-  if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 8, behavior: 'smooth' })
-}
+import { NavLink, useNavigate } from 'react-router-dom'
 
 export default function Nav({ cartCount, menuOpen, onMenuToggle, onCartOpen }) {
   const [scrolled, setScrolled] = useState(false)
   const badgeRef = useRef(null)
   const prevCount = useRef(cartCount)
+  const navigate = useNavigate()
 
   useEffect(() => {
-    // Scroll past the 32px announce bar → nav slides to top and gets glass bg
     const onScroll = () => setScrolled(window.scrollY > 32)
     window.addEventListener('scroll', onScroll, { passive: true })
     onScroll()
@@ -29,10 +24,11 @@ export default function Nav({ cartCount, menuOpen, onMenuToggle, onCartOpen }) {
     prevCount.current = cartCount
   }, [cartCount])
 
-  const handleLink = (e, href) => {
+  const handleBrand = (e) => {
     e.preventDefault()
+    navigate('/')
+    window.scrollTo({ top: 0, behavior: 'smooth' })
     if (menuOpen) onMenuToggle(false)
-    scrollTo(href)
   }
 
   return (
@@ -42,10 +38,10 @@ export default function Nav({ cartCount, menuOpen, onMenuToggle, onCartOpen }) {
       aria-label="Primary"
     >
       <a
-        href="#top"
+        href="/"
         className="nav__brand"
         aria-label="77 Seventy Seven — home"
-        onClick={(e) => handleLink(e, '#top')}
+        onClick={handleBrand}
       >
         <span className="logo">
           <span className="logo__num">
@@ -58,20 +54,25 @@ export default function Nav({ cartCount, menuOpen, onMenuToggle, onCartOpen }) {
 
       <div className="nav__links" role="navigation">
         {[
-          ['#top', 'Home'],
-          ['#shop', 'Shop'],
-          ['#lookbook', 'Lookbook'],
-          ['#about', 'About'],
-          ['#contact', 'Contact'],
-        ].map(([href, label]) => (
-          <a key={href} href={href} onClick={(e) => handleLink(e, href)}>
+          ['/', 'Home'],
+          ['/shop', 'Shop'],
+          ['/lookbook', 'Lookbook'],
+          ['/about', 'About'],
+          ['/contact', 'Contact'],
+        ].map(([to, label]) => (
+          <NavLink
+            key={to}
+            to={to}
+            end={to === '/'}
+            onClick={() => { if (menuOpen) onMenuToggle(false) }}
+          >
             {label}
-          </a>
+          </NavLink>
         ))}
       </div>
 
       <div className="nav__right">
-        {/* Cart button — opens cart drawer */}
+        {/* Cart button */}
         <button
           className="nav__cart"
           aria-label={`Cart — ${cartCount} item${cartCount !== 1 ? 's' : ''}`}

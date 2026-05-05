@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 export default function Footer() {
   return (
     <footer className="footer">
@@ -15,7 +17,7 @@ export default function Footer() {
             <h4>Seventy Seven</h4>
             <p>Limited runs of seventy-seven. Numbered, never restocked. The number is the standard.</p>
             <div className="socials">
-              <a href="#" aria-label="Instagram">
+              <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4">
                   <rect x="3" y="3" width="18" height="18" rx="4" />
                   <circle cx="12" cy="12" r="4" />
@@ -39,18 +41,18 @@ export default function Footer() {
           <div className="footer__col">
             <h4>Shop</h4>
             <ul>
-              <li><a href="#shop">New Arrivals</a></li>
-              <li><a href="#">Tops</a></li>
-              <li><a href="#">Bottoms</a></li>
-              <li><a href="#">Accessories</a></li>
+              <li><Link to="/shop">New Arrivals</Link></li>
+              <li><Link to="/shop">Tops</Link></li>
+              <li><Link to="/shop">Bottoms</Link></li>
+              <li><Link to="/shop">Accessories</Link></li>
             </ul>
           </div>
 
           <div className="footer__col">
             <h4>House</h4>
             <ul>
-              <li><a href="#about">About</a></li>
-              <li><a href="#lookbook">Lookbook</a></li>
+              <li><Link to="/about">About</Link></li>
+              <li><Link to="/lookbook">Lookbook</Link></li>
               <li><a href="#">Journal</a></li>
               <li><a href="#">Stockists</a></li>
             </ul>
@@ -62,7 +64,7 @@ export default function Footer() {
               <li><a href="#">Returns</a></li>
               <li><a href="#">Shipping</a></li>
               <li><a href="#">Privacy</a></li>
-              <li><a href="#contact">Contact</a></li>
+              <li><Link to="/contact">Contact</Link></li>
             </ul>
           </div>
         </div>

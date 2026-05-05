@@ -1,20 +1,13 @@
 import { useEffect, useState } from 'react'
-import { useScrollReveal, useParallax } from './hooks/useScrollReveal.js'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import IntroCurtain from './components/IntroCurtain.jsx'
 import AnnouncementBar from './components/AnnouncementBar.jsx'
 import Nav from './components/Nav.jsx'
 import MobileMenu from './components/MobileMenu.jsx'
 import CartDrawer from './components/CartDrawer.jsx'
-import Hero from './components/Hero.jsx'
-import DropCard from './components/DropCard.jsx'
-import Marquee from './components/Marquee.jsx'
-import Products from './components/Products.jsx'
-import Lookbook from './components/Lookbook.jsx'
-import Manifesto from './components/Manifesto.jsx'
-import Categories from './components/Categories.jsx'
-import Newsletter from './components/Newsletter.jsx'
 import Footer from './components/Footer.jsx'
+import ScrollToTop from './components/ScrollToTop.jsx'
 import {
   TweaksPanel,
   TweakSection,
@@ -22,6 +15,12 @@ import {
   TweakColor,
   useTweaks,
 } from './components/TweaksPanel.jsx'
+
+import Home from './pages/Home.jsx'
+import Shop from './pages/Shop.jsx'
+import Lookbook from './pages/Lookbook.jsx'
+import About from './pages/About.jsx'
+import Contact from './pages/Contact.jsx'
 
 // ─── Logo font options ──────────────────────────────────────────────────────
 const FONT_OPTIONS = [
@@ -58,7 +57,6 @@ applyLogoFont(TWEAK_DEFAULTS)
 // ─── App ────────────────────────────────────────────────────────────────────
 export default function App() {
   // ── Cart state ─────────────────────────────────────────────────
-  // cartItems: [{ id, name, price, ph, category, qty }, ...]
   const [cartItems, setCartItems] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
 
@@ -96,10 +94,6 @@ export default function App() {
   // ── Tweaks ───────────────────────────────────────────────────
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS)
 
-  // ── Hooks ────────────────────────────────────────────────────
-  useScrollReveal()
-  useParallax()
-
   useEffect(() => { applyLogoFont(t) }, [t.logoFont, t.logoTrack, t.accentColor])
 
   // Sync body class with mobile menu state
@@ -109,7 +103,8 @@ export default function App() {
   }, [menuOpen])
 
   return (
-    <>
+    <BrowserRouter>
+      <ScrollToTop />
       <IntroCurtain />
 
       {/* Fixed announcement bar — always at very top */}
@@ -135,14 +130,13 @@ export default function App() {
       />
 
       <main id="top">
-        <Hero />
-        <DropCard />
-        <Marquee />
-        <Products onAddToCart={addToCart} />
-        <Lookbook />
-        <Manifesto />
-        <Categories />
-        <Newsletter />
+        <Routes>
+          <Route path="/" element={<Home onAddToCart={addToCart} />} />
+          <Route path="/shop" element={<Shop onAddToCart={addToCart} />} />
+          <Route path="/lookbook" element={<Lookbook />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+        </Routes>
       </main>
 
       <Footer />
@@ -203,6 +197,6 @@ export default function App() {
           onChange={(v) => setTweak('accentColor', v)}
         />
       </TweaksPanel>
-    </>
+    </BrowserRouter>
   )
 }
